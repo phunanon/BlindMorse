@@ -12,11 +12,20 @@ let next;
 let onlyIfWrong = false;
 
 function load () {
+  const env = prompt("desktop or mobile?", "mobile");
+  if (env == "desktop") {
+    document.body.addEventListener("mousedown", touchOn);
+    document.body.addEventListener("mouseup", touchOff);
+  } else {
+    document.body.addEventListener("touchstart", touchOn);
+    document.body.addEventListener("touchend", touchOff);
+  }
   let choice = prompt("rand or seq?", "rand");
   next = choice == "seq" ? seq : rnd;
   if (next === seq) {
     onlyIfWrong = confirm("Play only if wrong?");
   }
+  checkAndNext();
 }
 
 var char = 0;
@@ -74,7 +83,7 @@ body:before {
 }
 </style>
 </head>
-<body onload="load()" ontouchstart="touchOn()" ontouchend="touchOff()">
+<body onload="load()">
   <audio id="abc">
     <source src="abc.wav" type="audio/wav">
   </audio>
