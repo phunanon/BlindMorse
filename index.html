@@ -12,6 +12,7 @@ let next;
 let onlyIfWrong = false;
 
 function load () {
+  aud().playbackRate = 0.75;
   const env = prompt("desktop or mobile?", "mobile");
   if (env == "desktop") {
     document.body.addEventListener("mousedown", touchOn);
@@ -39,7 +40,7 @@ function checkAndNext (attempt) {
   if (!onlyIfWrong || !correct) {
     aud().fastSeek(char);
     aud().play();
-    setTimeout(() => aud().pause(), 1000);
+    setTimeout(() => aud().pause(), 1500);
   }
   document.body.setAttribute("data-char", morse[char]);
 }
