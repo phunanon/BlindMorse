@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+const morse = ".- -... -.-. -.. . ..-. --. .... .. .--- -.- .-.. -- -. --- .--. --.- .-. ... - ..- ...- .-- -..- -.-- --..".split(" ");
+const aud = () => document.querySelector("audio");
+const rnd = () => Math.floor(Math.random() * morse.length);
+let m = 0;
+const seq = () => ++m % morse.length;
+let next;
+let onlyIfWrong = false;
+
+function load () {
+  let choice = prompt("rand or seq?", "rand");
+  next = choice == "seq" ? seq : rnd;
+  if (next === seq) {
+    onlyIfWrong = confirm("Play only if wrong?");
+  }
+}
+
+var char = 0;
+function checkAndNext (attempt) {
+  const correct = attempt === morse[char];
+  if (correct) {
+    let avoid = char;
+    while (char == avoid)
+      char = next();
+  }
+  if (!onlyIfWrong || !correct) {
+    aud().fastSeek(char);
+    aud().play();
+    setTimeout(() => aud().pause(), 1000);
+  }
+  document.body.setAttribute("data-char", morse[char]);
+}
+
+var touchStart;
+var periodTimer;
+const timeout = 800;
+let touches = [0, 0, 0, 0];
+const touchOn = () => touchStart = performance.now();
+function touchOff () {
+  let len = performance.now() - touchStart;
+  if (len > timeout) {
+    while (touches[0] == 0)
+      touches.shift();
+    checkAndNext(touches.join(""));
+    touches = [0, 0, 0, 0];
+  } else {
+    touches.shift();
+    touches.push(len > 200 ? '-' : '.');
+    clearTimeout(periodTimer);
+    periodTimer = setTimeout(touchOff, timeout);
+  }
+}
+</script>
+<style>
+* {
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+}
+body {
+  overflow: hidden;
+}
+body:before {
+  content: attr(data-char);
+  display: block;
+  color: #FFF;
+  font-size: 8rem;
+  margin-top: 8rem;
+  text-align: center;
+}
+</style>
+</head>
+<body onload="load()" ontouchstart="touchOn()" ontouchend="touchOff()">
+  <audio id="abc">
+    <source src="abc.wav" type="audio/wav">
+  </audio>
+</body>
+</html>
